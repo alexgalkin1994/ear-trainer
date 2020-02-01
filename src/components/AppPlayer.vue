@@ -1,13 +1,32 @@
 <template>
   <div class="wrapper">
-    <button v-if="samplesLoaded" @click.prevent="playIntervalHarmonically()">
+    <button
+      class="play-button"
+      v-if="samplesLoaded"
+      @click.prevent="playIntervalHarmonically()"
+    >
       Play Harmonically
     </button>
-    <button @click="showInterval = true">Show Interval</button>
+    <button class="play-button" @click="showInterval = true">
+      Show Interval
+    </button>
 
-    <div class="spoilerBox">
-      <div v-if="showInterval" class="intervalDisplay">
+    <div class="user-answer">
+      <button
+        v-for="(interval, name, index) in intervals"
+        :key="index"
+        :value="name"
+        @click="checkAnswer($event)"
+      >
+        {{ interval }}
+      </button>
+    </div>
+
+    <div class="spoiler-box">
+      <div v-if="showInterval" class="interval-display">
         {{ currentInterval }} - {{ note1 }} - {{ note2 }}
+        <div v-if="userAnswerIsCorrect" class="is-correct">Correct!</div>
+        <div v-if="!userAnswerIsCorrect" class="is-wrong">Wrong!</div>
       </div>
     </div>
   </div>
@@ -22,9 +41,12 @@ export default {
     return {
       samplesLoaded: false,
       currentInterval: null,
+      currentIntervalSemitones: null,
       note1: null,
       note2: null,
       showInterval: false,
+      userAnswer: null,
+      userAnswerIsCorrect: null,
       note_degrees: {},
       intervals: {
         0: "Octave",
@@ -102,14 +124,26 @@ export default {
       this.note_files[firstNote].play();
       this.note_files[secondNote].play();
 
+      this.currentIntervalSemitones = this.getInterval(
+        firstNoteName,
+        secondNoteName
+      );
       // Readable interval
-      this.currentInterval = this.intervals[
-        this.getInterval(firstNoteName, secondNoteName)
-      ];
+      this.currentInterval = this.intervals[this.currentIntervalSemitones];
       this.note1 = firstNoteName;
       this.note2 = secondNoteName;
 
       this.showInterval = false;
+    },
+
+    checkAnswer(event) {
+      const userVal = parseInt(event.toElement.value);
+      this.showInterval = true;
+      if (userVal === this.currentIntervalSemitones) {
+        this.userAnswerIsCorrect = true;
+      } else {
+        this.userAnswerIsCorrect = false;
+      }
     }
   },
   mounted() {
@@ -136,12 +170,16 @@ export default {
   align-items: center;
 }
 
-button {
+.play-button {
   padding: 25px;
   margin: 25px;
 }
 
-.spoilerBox {
+.user-answer {
+  display: flex;
+}
+
+.spoiler-box {
   height: 100px;
   width: 200px;
   background-color: #333;
