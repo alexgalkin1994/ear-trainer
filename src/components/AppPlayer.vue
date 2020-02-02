@@ -1,14 +1,15 @@
 <template>
   <div class="wrapper">
+    <select v-model="harmonicOrMelodic">
+      <option value="harmonic">Harmonic</option>
+      <option value="melodic">Melodic</option>
+    </select>
     <button
       class="play-button"
       v-if="samplesLoaded"
-      @click.prevent="playIntervalHarmonically()"
+      @click.prevent="playInterval()"
     >
-      Play Harmonically
-    </button>
-    <button class="play-button" @click="showInterval = true">
-      Show Interval
+      {{ playButtonText }}
     </button>
 
     <div class="user-answer">
@@ -47,6 +48,11 @@ export default {
       showInterval: false,
       userAnswer: null,
       userAnswerIsCorrect: null,
+      repeat: false,
+      playButtonText: "Play",
+      firstNote: "",
+      secondNote: "",
+      harmonicOrMelodic: "harmonic",
       note_degrees: {},
       intervals: {
         0: "Octave",
@@ -111,18 +117,28 @@ export default {
       } while (randomNote === prevNote);
       return randomNote;
     },
-    playIntervalHarmonically() {
-      // Select random note
-      const firstNote = this.selectRandomNote();
-      const secondNote = this.selectRandomNote(firstNote);
+    playInterval() {
+      if (!this.repeat) {
+        // Select random note
+        this.firstNote = this.selectRandomNote();
+        this.secondNote = this.selectRandomNote(this.firstNote);
+      }
+
+      this.repeat = true;
+      this.playButtonText = "Repeat";
 
       // Save representation of note name without octave
-      const firstNoteName = this.notes[firstNote];
-      const secondNoteName = this.notes[secondNote];
+      const firstNoteName = this.notes[this.firstNote];
+      const secondNoteName = this.notes[this.secondNote];
 
       // Play interval
-      this.note_files[firstNote].play();
-      this.note_files[secondNote].play();
+      if (this.harmonicOrMelodic === "harmonic") {
+        this.note_files[this.firstNote].play();
+        this.note_files[this.secondNote].play();
+      } else {
+        this.note_files[this.firstNote].play();
+        setTimeout(() => this.note_files[this.secondNote].play(), 1000);
+      }
 
       this.currentIntervalSemitones = this.getInterval(
         firstNoteName,
@@ -136,14 +152,15 @@ export default {
       this.showInterval = false;
     },
 
+    // Check user answer
     checkAnswer(event) {
+      this.repeat = false;
+      this.playButtonText = "Play";
       const userVal = parseInt(event.toElement.value);
       this.showInterval = true;
-      if (userVal === this.currentIntervalSemitones) {
-        this.userAnswerIsCorrect = true;
-      } else {
-        this.userAnswerIsCorrect = false;
-      }
+      userVal === this.currentIntervalSemitones
+        ? (this.userAnswerIsCorrect = true)
+        : (this.userAnswerIsCorrect = false);
     }
   },
   mounted() {
