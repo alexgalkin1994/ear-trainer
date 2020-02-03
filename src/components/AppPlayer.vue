@@ -12,16 +12,16 @@
       {{ playButtonText }}
     </button>
 
-    <div class="user-answer">
-      <button
+    <ul class="user-answer">
+      <li
         v-for="(interval, name, index) in intervals"
         :key="index"
         :value="name"
         @click="checkAnswer($event)"
       >
         {{ interval }}
-      </button>
-    </div>
+      </li>
+    </ul>
 
     <div class="spoiler-box">
       <div v-if="showInterval" class="interval-display">
@@ -140,6 +140,7 @@ export default {
         setTimeout(() => this.note_files[this.secondNote].play(), 1000);
       }
 
+      // Getting interval in semitones
       this.currentIntervalSemitones = this.getInterval(
         firstNoteName,
         secondNoteName
@@ -167,7 +168,7 @@ export default {
     const noteNames = Object.keys(this.notes);
     for (let note of noteNames) {
       this.note_files[note] = new Howl({
-        src: ["http://127.0.0.1:8081/" + note + "_Piano.mp3"],
+        src: ["http://127.0.0.1:8081/piano/" + note + ".mp3"],
         onloaderror: function(id, error) {
           console.error("loadError: " + note + " - " + error);
         }
@@ -194,6 +195,14 @@ export default {
 
 .user-answer {
   display: flex;
+
+  li {
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover {
+      color: #42b983;
+    }
+  }
 }
 
 .spoiler-box {
