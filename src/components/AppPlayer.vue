@@ -4,13 +4,9 @@
       <option value="harmonic">Harmonic</option>
       <option value="melodic">Melodic</option>
     </select>
-    <button
-      class="play-button"
-      v-if="samplesLoaded"
-      @click.prevent="playInterval()"
-    >
+    <a class="play-button" v-if="samplesLoaded" @click.prevent="playInterval()">
       {{ playButtonText }}
-    </button>
+    </a>
 
     <ul class="user-answer">
       <li
@@ -112,8 +108,8 @@ export default {
       let randomNote;
 
       do {
-        const keys = Object.keys(this.notes);
-        randomNote = keys[(keys.length * Math.random()) << 0];
+        const notes = Object.keys(this.notes);
+        randomNote = notes[(notes.length * Math.random()) << 0];
       } while (randomNote === prevNote);
       return randomNote;
     },
@@ -189,8 +185,24 @@ export default {
 }
 
 .play-button {
-  padding: 25px;
-  margin: 25px;
+  cursor: pointer;
+  border: 1px #55eca8 solid;
+  color: #55eca8;
+  border-radius: 50%;
+  height: 7em;
+  width: 7em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin: 1em 0;
+  transition: 0.3s all;
+
+  &:hover {
+    border: 1px #86ffc9 solid;
+    color: #86ffc9;
+  }
 }
 
 .user-answer {

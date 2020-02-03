@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
+      <router-link to="/">Home</router-link>
       <router-link to="/about">About</router-link>
     </div>
     <router-view />
@@ -59,13 +59,22 @@ img {
 
 #nav {
   padding: 30px;
+  display: flex;
+  //justify-content: flex-end;
 
   a {
     font-weight: bold;
-    color: #2c3e50;
+    color: #55eca8;
+    text-decoration: none;
+    border-bottom: 3px transparent solid;
+    transition: 0.3s border-bottom;
+    margin: 0 1em;
 
     &.router-link-exact-active {
-      color: #42b983;
+    }
+    &:hover {
+      color: #86ffc9;
+      border-bottom: 3px #86ffc9 solid;
     }
   }
 }
